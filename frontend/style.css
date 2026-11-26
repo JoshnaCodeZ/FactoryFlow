@@ -1,0 +1,516 @@
+
+/* =====================================
+   FACTORYFLOW - MANUFACTURING ERP
+===================================== */
+
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --sidebar: #14213d;
+    --sidebar-light: #1e3154;
+    --background: #f4f7fb;
+    --white: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --green: #16a34a;
+    --red: #dc2626;
+    --shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--background);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+button, select {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+/* APP LAYOUT */
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    width: 250px;
+    min-width: 250px;
+    background: var(--sidebar);
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    padding: 25px 16px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 10px 32px;
+}
+
+.brand-icon {
+    width: 43px;
+    height: 43px;
+    background: var(--primary);
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.brand h2 {
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.brand span {
+    color: #a8b6cc;
+    font-size: 11px;
+}
+
+.nav-section {
+    margin-bottom: 27px;
+}
+
+.nav-heading {
+    color: #8da0bc;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+    padding: 0 12px;
+    margin-bottom: 12px;
+}
+
+.nav-link {
+    display: block;
+    color: #d0d9e8;
+    text-decoration: none;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin: 4px 0;
+    transition: 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background: var(--sidebar-light);
+    color: white;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding: 18px 10px 0;
+    border-top: 1px solid #34445f;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar {
+    background: #3b82f6;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+}
+
+.sidebar-footer strong,
+.sidebar-footer span {
+    display: block;
+    font-size: 12px;
+}
+
+.sidebar-footer span {
+    color: #a8b6cc;
+    margin-top: 3px;
+}
+
+/* MAIN CONTENT */
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.topbar {
+    background: var(--white);
+    padding: 20px 32px;
+    min-height: 88px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.topbar h2 {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.topbar p {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+#language-select {
+    border: 1px solid var(--border);
+    padding: 9px 12px;
+    border-radius: 8px;
+    background: white;
+    color: var(--text);
+}
+
+.voice-btn,
+.voice-actions button {
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--text);
+    padding: 9px 13px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.voice-btn:hover,
+.voice-actions button:hover {
+    background: #eff6ff;
+    border-color: var(--primary);
+}
+
+.system-status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    color: var(--green);
+}
+
+.status-dot {
+    height: 8px;
+    width: 8px;
+    background: var(--green);
+    border-radius: 50%;
+}
+
+.logout-btn {
+    border: none;
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* CONTENT */
+
+.content-area {
+    padding: 28px 32px;
+}
+
+/* VOICE ASSISTANT */
+
+.voice-assistant-panel {
+    background: linear-gradient(120deg, #1d4ed8, #3b82f6);
+    color: white;
+    padding: 20px 24px;
+    border-radius: 14px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    box-shadow: var(--shadow);
+}
+
+.voice-assistant-panel h3 {
+    font-size: 17px;
+    margin-bottom: 7px;
+}
+
+.voice-assistant-panel p {
+    font-size: 12px;
+    color: #e0ecff;
+}
+
+.voice-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.voice-actions button {
+    background: white;
+    border: none;
+}
+
+/* WELCOME */
+
+.welcome-section {
+    margin-bottom: 24px;
+}
+
+.welcome-section h1 {
+    font-size: 23px;
+    margin-bottom: 7px;
+}
+
+.welcome-section p {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+/* KPI CARDS */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    min-width: 0;
+}
+
+.stat-card span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.stat-card h2 {
+    font-size: 25px;
+    margin: 15px 0 9px;
+    overflow-wrap: anywhere;
+}
+
+.stat-card small {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+/* DASHBOARD PANELS */
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 20px;
+}
+
+.panel {
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    min-width: 0;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.panel-header h3 {
+    font-size: 15px;
+}
+
+.panel-tag {
+    background: #dcfce7;
+    color: #15803d;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.production-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.production-stats > div {
+    background: #f8fafc;
+    padding: 16px;
+    border-radius: 9px;
+}
+
+.production-stats span {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.production-stats h2 {
+    font-size: 23px;
+    margin-top: 10px;
+}
+
+#production-variance {
+    margin-top: 20px;
+    padding: 12px;
+    background: #eff6ff;
+    color: var(--primary-dark);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.system-info p {
+    padding: 13px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.system-info strong {
+    color: var(--text);
+}
+
+/* OTHER MODULES */
+
+.page {
+    display: none;
+}
+
+.active-page {
+    display: block;
+}
+
+/* RESPONSIVE DESIGN */
+
+@media (max-width: 1100px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .app-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-width: 0;
+        padding: 16px;
+    }
+
+    .brand {
+        padding-bottom: 18px;
+    }
+
+    .nav-section {
+        margin-bottom: 12px;
+    }
+
+    .nav-section:not(:first-of-type) {
+        display: none;
+    }
+
+    .nav-section:first-of-type {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .nav-heading {
+        width: 100%;
+    }
+
+    .nav-link {
+        padding: 9px 11px;
+        font-size: 11px;
+    }
+
+    .sidebar-footer {
+        display: none;
+    }
+
+    .topbar {
+        padding: 18px;
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .topbar-right {
+        width: 100%;
+    }
+
+    .content-area {
+        padding: 18px;
+    }
+
+    .voice-assistant-panel {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .stat-card {
+        padding: 15px;
+    }
+
+    .stat-card h2 {
+        font-size: 19px;
+    }
+
+    .production-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 420px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .topbar-right {
+        gap: 7px;
+    }
+}

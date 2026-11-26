@@ -1,0 +1,99 @@
+
+                <!-- DASHBOARD KPI CARDS -->
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+                        <span data-i18n="totalSales">Total Sales</span>
+                        <h2 id="total-sales">₹0.00</h2>
+                        <small data-i18n="invoiceValue">Invoice value</small>
+                    </div>
+
+                    <div class="stat-card">
+                        <span data-i18n="paymentsReceived">Payments Received</span>
+                        <h2 id="payments-received">₹0.00</h2>
+                        <small data-i18n="totalCollections">Total collections</small>
+                    </div>
+
+                    <div class="stat-card">
+                        <span data-i18n="outstanding">Outstanding</span>
+                        <h2 id="outstanding">₹0.00</h2>
+                        <small data-i18n="pendingPayments">Pending payments</small>
+                    </div>
+
+                    <div class="stat-card">
+                        <span data-i18n="inventoryValue">Inventory Value</span>
+                        <h2 id="inventory-value">₹0.00</h2>
+                        <small data-i18n="currentStock">Current stock valuation</small>
+                    </div>
+
+                </div>
+
+                <!-- DASHBOARD MAIN PANELS -->
+                <div class="dashboard-grid">
+
+                    <!-- PRODUCTION OVERVIEW -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 data-i18n="productionOverview">Production Overview</h3>
+                            <span class="panel-tag" data-i18n="liveReport">Live Report</span>
+                        </div>
+
+                        <div class="production-stats">
+
+                            <div>
+                                <span data-i18n="productionRuns">Production Runs</span>
+                                <h2 id="production-runs">0</h2>
+                            </div>
+
+                            <div>
+                                <span data-i18n="expectedOutput">Expected Output</span>
+                                <h2 id="expected-output">0</h2>
+                            </div>
+
+                            <div>
+                                <span data-i18n="actualOutput">Actual Output</span>
+                                <h2 id="actual-output">0</h2>
+                            </div>
+
+                        </div>
+
+                        <p id="production-variance">
+                            <span data-i18n="outputVariance">Output variance</span>: 0
+                        </p>
+                    </div>
+
+                    <!-- SYSTEM INFORMATION -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 data-i18n="systemInformation">System Information</h3>
+                        </div>
+
+                        <div class="system-info">
+                            <p>Backend <strong>FastAPI</strong></p>
+                            <p>Database <strong>SQLite</strong></p>
+                            <p>Frontend <strong>HTML / CSS / JS</strong></p>
+                            <p>Application <strong>FactoryFlow</strong></p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- OTHER MODULES -->
+                <div id="module-page" class="page">
+                    <div class="panel">
+                        <h2 id="module-heading">Module</h2>
+                        <p id="module-description">Module content will appear here.</p>
+                        <div id="module-content"></div>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="script.js"></script>
+
+</body>
+</html>
