@@ -1,4 +1,4 @@
-# FactoryFlow – Manufacturing Order-to-Audit Management System
+<img width="1282" height="816" alt="image" src="https://github.com/user-attachments/assets/f49c8aa9-3afa-4f2d-ae24-969e868f17fc" /># FactoryFlow – Manufacturing Order-to-Audit Management System
 
 FactoryFlow is a Python-based manufacturing management system designed to manage and track business operations across the complete order-to-audit workflow.
 
@@ -162,6 +162,40 @@ http://127.0.0.1:8000/docs
 ```
 
 Swagger UI provides an interactive interface to explore and test the available API endpoints.
+
+## Application Access and Execution
+
+**Project:** FactoryFlow – Order-to-Audit Manufacturing Management System
+
+### Application URLs
+
+- Frontend: http://127.0.0.1:5500
+- Backend API: http://127.0.0.1:8000
+- API Documentation: http://127.0.0.1:8000/docs
+- GitHub Repository: [Insert repository URL]
+
+*Note: The application currently runs locally. These URLs are accessible when the application is running on the host computer.*
+
+### Execution Instructions
+
+1. Clone the GitHub repository.
+2. Create and activate a Python virtual environment.
+3. Install dependencies using `pip install -r requirements.txt`.
+4. Start the FastAPI backend using:
+
+   `python -m uvicorn backend.app.main:app --reload`
+
+5. Start the frontend using:
+
+   `python -m http.server 5500`
+
+6. Open `http://127.0.0.1:5500` in a browser.
+
+### Test Credentials
+
+- Administrator: [Insert username and password]
+- Salesman: [Insert username and password]
+
 
 ## 🔧 Development Status
 
