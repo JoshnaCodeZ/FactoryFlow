@@ -331,10 +331,28 @@ async function loadDashboardData() {
 
     console.log("Detected dashboard role:", userRole);
     
-    const adminSections = [
+   const adminSections = [
     "admin-welcome-section",
     "admin-kpi-section",
     "admin-dashboard-panels"
+];
+
+adminSections.forEach(id => {
+    const section = getElement(id);
+    if (section) {
+        section.style.display =
+            userRole === "salesman" ? "none" : "";
+    }
+    
+});
+
+// Show recent orders only for salesmen
+const recentOrdersSection = getElement("salesman-orders-section");
+
+if (recentOrdersSection) {
+    recentOrdersSection.style.display =
+        userRole === "salesman" ? "" : "none";
+}
 ];
 
 adminSections.forEach(id => {
