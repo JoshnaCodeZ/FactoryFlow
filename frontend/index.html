@@ -1,6 +1,228 @@
 
-                <!-- DASHBOARD KPI CARDS -->
-                <div class="stats-grid">
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FactoryFlow | Order-to-Audit Management</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <!-- ================= SIDEBAR ================= -->
+
+        <aside class="sidebar">
+
+            <div class="brand">
+                <h2>Factory<span>Flow</span></h2>
+                <p>Manufacturing Management</p>
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <div class="nav-section">
+
+                    <p class="nav-heading">MAIN MENU</p>
+
+                    <a href="#" class="nav-link active" data-page="dashboard">
+                        <span>▦</span>
+                        <span data-i18n="dashboard">Dashboard</span>
+                    </a>
+
+                    <a href="#" class="nav-link" data-page="products">
+                        <span>▣</span>
+                        <span data-i18n="products">Products</span>
+                    </a>
+
+                    <a href="#" class="nav-link" data-page="customers">
+                        <span>♙</span>
+                        <span data-i18n="customers">Customers</span>
+                    </a>
+
+                    <a href="#" class="nav-link" data-page="orders">
+                        <span>▤</span>
+                        <span data-i18n="orders">Orders</span>
+                    </a>
+
+                    <a href="#" class="nav-link" data-page="inventory">
+                        <span>▥</span>
+                        <span data-i18n="inventory">Inventory</span>
+                    </a>
+
+                    <a href="#" class="nav-link" data-page="production">
+                        <span>⚙</span>
+                        <span data-i18n="production">Production</span>
+                    </a>
+
+                </div>
+
+                <div class="nav-section">
+
+                    <p class="nav-heading">OPERATIONS</p>
+
+                    <a href="#" class="nav-link" data-page="invoices">
+                        <span>▧</span>
+                        <span data-i18n="invoices">GST Invoices</span>
+                    </a>
+
+                    <a href="#" class="nav-link" data-page="dispatch">
+                        <span>➜</span>
+                        <span data-i18n="dispatch">Dispatch</span>
+                    </a>
+
+                    <a href="#" class="nav-link" data-page="payments">
+                        <span>₹</span>
+                        <span data-i18n="payments">Payments</span>
+                    </a>
+
+                    <a href="#" class="nav-link" data-page="reports">
+                        <span>▤</span>
+                        <span data-i18n="reports">Audit Reports</span>
+                    </a>
+
+                </div>
+
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>FactoryFlow v1.0</p>
+                <small>Order-to-Audit System</small>
+            </div>
+
+        </aside>
+
+
+        <!-- ================= MAIN CONTENT ================= -->
+
+        <main class="main-content">
+
+            <!-- HEADER -->
+
+            <header class="topbar">
+
+                <div class="page-heading">
+                    <h1 id="page-title">Dashboard Overview</h1>
+                    <p>Welcome back! Here's your factory overview.</p>
+                </div>
+
+                <div class="header-actions">
+
+                    <!-- LANGUAGE SELECTOR -->
+
+                    <select id="language-select" aria-label="Select language">
+                        <option value="en">English</option>
+                        <option value="ta">தமிழ்</option>
+                    </select>
+
+                    <!-- VOICE BUTTON -->
+
+                    <button id="voice-btn" class="header-button" type="button">
+                        🎤 Speak
+                    </button>
+
+                    <!-- SOUND BUTTON -->
+
+                    <button id="sound-btn" class="header-button" type="button">
+                        🔊 Sound On
+                    </button>
+
+                    <!-- SYSTEM STATUS -->
+
+                    <span class="system-status">
+                        <span class="status-dot"></span>
+                        <span id="system-status-text">System Online</span>
+                    </span>
+
+                    <!-- LOGOUT -->
+
+                    <button id="logout-btn" class="logout-button" type="button">
+                        Logout
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <!-- ================= VOICE ASSISTANT ================= -->
+
+            <section class="voice-assistant">
+
+                <div class="assistant-icon">
+                    🎙️
+                </div>
+
+<div class="dashboard-section">
+    <h3>My Recent Orders</h3>
+
+    <div class="table-container">
+        <table class="products-table">
+            <thead>
+                <tr>
+                    <th>Order Number</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Quantity</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody id="salesman-recent-orders">
+                <tr>
+                    <td colspan="6">Loading orders...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+                <div class="assistant-controls">
+
+                    <button id="repeat-btn" type="button">
+                        🔊 Repeat
+                    </button>
+
+                    <button id="stop-speech-btn" type="button">
+                        ⏹ Stop
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= DASHBOARD PAGE ================= -->
+
+            <section id="dashboard-page" class="page active-page">
+
+                <!-- WELCOME SECTION -->
+
+                <section class="welcome-section" id="admin-welcome-section">
+
+                    <div>
+                        <h2>Factory Overview</h2>
+                        <p>Monitor your manufacturing operations in one place.</p>
+                    </div>
+
+                </section>
+
+
+                <!-- KPI CARDS -->
+
+                <div class="stats-grid" id="admin-kpi-section">
 
                     <div class="stat-card">
                         <span data-i18n="totalSales">Total Sales</span>
@@ -28,14 +250,23 @@
 
                 </div>
 
-                <!-- DASHBOARD MAIN PANELS -->
-                <div class="dashboard-grid">
+
+                <!-- DASHBOARD PANELS -->
+
+                <div class="dashboard-grid" id="admin-dashboard-panels">
 
                     <!-- PRODUCTION OVERVIEW -->
+
                     <div class="panel">
+
                         <div class="panel-header">
-                            <h3 data-i18n="productionOverview">Production Overview</h3>
-                            <span class="panel-tag" data-i18n="liveReport">Live Report</span>
+                            <h3 data-i18n="productionOverview">
+                                Production Overview
+                            </h3>
+
+                            <span class="panel-tag" data-i18n="liveReport">
+                                Live Report
+                            </span>
                         </div>
 
                         <div class="production-stats">
@@ -60,39 +291,71 @@
                         <p id="production-variance">
                             <span data-i18n="outputVariance">Output variance</span>: 0
                         </p>
+
                     </div>
 
+
                     <!-- SYSTEM INFORMATION -->
+
                     <div class="panel">
+
                         <div class="panel-header">
-                            <h3 data-i18n="systemInformation">System Information</h3>
+                            <h3 data-i18n="systemInformation">
+                                System Information
+                            </h3>
                         </div>
 
                         <div class="system-info">
+
                             <p>Backend <strong>FastAPI</strong></p>
+
                             <p>Database <strong>SQLite</strong></p>
+
                             <p>Frontend <strong>HTML / CSS / JS</strong></p>
+
                             <p>Application <strong>FactoryFlow</strong></p>
+
                         </div>
+
                     </div>
 
-                </div>
-
-                <!-- OTHER MODULES -->
-                <div id="module-page" class="page">
-                    <div class="panel">
-                        <h2 id="module-heading">Module</h2>
-                        <p id="module-description">Module content will appear here.</p>
-                        <div id="module-content"></div>
-                    </div>
                 </div>
 
             </section>
 
+
+            <!-- ================= OTHER MODULE PAGES ================= -->
+
+            <section id="module-page" class="page">
+
+                <div class="panel">
+
+                    <h2 id="module-heading">Module</h2>
+
+                    <p id="module-description">
+                        Module content will appear here.
+                    </p>
+
+                    <div id="module-content"></div>
+
+                </div>
+
+            </section>
+
+
+            <!-- FOOTER -->
+
+            <footer class="main-footer">
+                <p>© 2026 FactoryFlow | Manufacturing Order-to-Audit Management System</p>
+            </footer>
+
         </main>
+
     </div>
 
+
     <!-- JAVASCRIPT -->
+
     <script src="script.js"></script>
 
 </body>

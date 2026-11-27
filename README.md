@@ -1,14 +1,16 @@
 # FactoryFlow – Manufacturing Order-to-Audit Management System
 
-FactoryFlow is a Python-based manufacturing management system designed to manage and track business operations across the order-to-audit workflow.
+FactoryFlow is a Python-based manufacturing management system designed to manage and track business operations across the complete order-to-audit workflow.
 
-The system brings together sales order management, inventory tracking, production management, GST invoicing, dispatch operations, payment recording, and audit reporting.
+The system integrates sales order management, inventory tracking, production management, GST invoicing, dispatch operations, payment recording, and audit reporting into a unified application.
 
 ## 🚀 Technologies Used
 
 - **Backend:** Python, FastAPI
+- **Frontend:** HTML5, CSS3, JavaScript
 - **Database:** SQLite
 - **ORM:** SQLAlchemy
+- **Authentication:** JWT, Password Hashing
 - **API Documentation:** Swagger UI
 
 ## ✨ Implemented Features
@@ -16,6 +18,7 @@ The system brings together sales order management, inventory tracking, productio
 ### 1. User Management
 - User authentication
 - Role-based access control
+- JWT-based authentication
 
 ### 2. Product and Customer Management
 - Product management
@@ -60,6 +63,13 @@ The system brings together sales order management, inventory tracking, productio
 - Inventory reports
 - Combined audit dashboard
 
+### 10. Frontend Interface
+- Dashboard overview
+- Module-based navigation
+- English and Tamil language options
+- Voice assistant interface
+- Responsive layout
+
 ## 📁 Project Structure
 
 ```text
@@ -73,8 +83,14 @@ FactoryFlow/
 │       ├── main.py
 │       └── models.py
 │
+├── frontend/
+│   ├── index.html
+│   ├── script.js
+│   └── style.css
+│
 ├── .gitignore
-└── README.md
+├── README.md
+└── requirements.txt
 ```
 
 ## ⚙️ Getting Started
@@ -85,71 +101,86 @@ FactoryFlow/
 - Git
 - pip
 
-### Installation
-
-1. Clone the repository:
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/JoshnaCodeZ/FactoryFlow.git
 ```
 
-2. Navigate into the project:
+### 2. Navigate to the Project Directory
 
 ```bash
 cd FactoryFlow
 ```
 
-3. Create a virtual environment:
+### 3. Create a Virtual Environment
 
 ```bash
 python -m venv venv
 ```
 
-4. Activate the virtual environment on Windows:
+### 4. Activate the Virtual Environment
+
+**Windows:**
 
 ```bash
 venv\Scripts\activate
 ```
 
-5. Install the required dependencies:
+**Linux / macOS:**
 
 ```bash
-pip install fastapi uvicorn sqlalchemy
+source venv/bin/activate
 ```
 
-Additional dependencies may be required depending on the authentication and application modules.
+### 5. Install Dependencies
 
-### Run the Application
+```bash
+pip install -r requirements.txt
+```
+
+### 6. Run the Backend Application
+
+From the project root directory:
 
 ```bash
 uvicorn backend.app.main:app --reload
 ```
 
-### API Documentation
+The backend server will be available at:
 
-After starting the server, open:
+```text
+http://127.0.0.1:8000
+```
 
+### 7. API Documentation
+
+Open the following URL in your browser:
+
+```text
 http://127.0.0.1:8000/docs
+```
 
-Swagger UI provides an interactive interface to explore and test the API endpoints.
+Swagger UI provides an interactive interface to explore and test the available API endpoints.
 
-## 🔧 Current Development Status
+## 🔧 Development Status
 
 FactoryFlow is under active development.
 
-The backend currently includes core manufacturing workflow modules, GST invoicing, dispatch management, payment recording, and audit reporting.
+The application currently includes backend modules for manufacturing operations, GST invoicing, dispatch management, payment recording, and audit reporting, along with a frontend interface.
 
-Upcoming improvements:
+### Planned Improvements
 
-- Inventory and combined dashboard verification
-- Frontend dashboard development
+- Complete frontend and backend integration testing
+- Verify all manufacturing workflow scenarios
 - Invoice PDF generation
 - Additional automated testing
 - Improved audit history and documentation
+- Final demonstration and performance verification
 
 ## 👩‍💻 Developer
 
-**Joshna Srini**
+**JoshnaSrini**
 
 GitHub: [JoshnaCodeZ](https://github.com/JoshnaCodeZ)
 

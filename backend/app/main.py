@@ -1,6 +1,11 @@
+import csv
+import io
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment
+from fastapi.responses import StreamingResponse
 from datetime import datetime
 from uuid import uuid4
-
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
@@ -28,6 +33,21 @@ app = FastAPI(
     title="FactoryFlow",
     description="Order-to-Audit Management System",
     version="1.2.0"
+)
+
+# ==========================================
+# CORS CONFIGURATION
+# ==========================================
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://127.0.0.1:5500",
+        "http://localhost:5500"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 security = HTTPBearer()
@@ -363,13 +383,63 @@ def production_dashboard(
 
 @app.get("/sales/dashboard")
 def sales_dashboard(
+    db: Session = Depends(get_db),
     user: models.User = Depends(require_role("salesman"))
 ):
+    orders = (
+        db.query(models.SalesOrder)
+        .filter(models.SalesOrder.salesman_id == user.id)
+        .order_by(models.SalesOrder.order_date.desc())
+        .all()
+    )
+
+    total_orders = len(orders)
+    pending_orders = sum(1 for order in orders if order.status == "pending")
+    approved_orders = sum(1 for order in orders if order.status == "approved")
+
+    total_sales = 0
+    total_items = 0
+    recent_orders = []
+
+    for order in orders:
+        items = (
+            db.query(models.OrderItem)
+            .filter(models.OrderItem.order_id == order.id)
+            .all()
+        )
+
+        order_total = sum(item.quantity * item.unit_price for item in items)
+        item_count = sum(item.quantity for item in items)
+
+        total_sales += order_total
+        total_items += item_count
+
+        if len(recent_orders) < 5:
+            customer = db.query(models.Customer).filter(
+                models.Customer.id == order.customer_id
+            ).first()
+
+            recent_orders.append({
+                "order_number": order.order_number,
+                "customer": customer.name if customer else "Unknown",
+                "status": order.status,
+                "order_date": order.order_date.isoformat() if order.order_date else None,
+                "quantity": item_count,
+                "total_amount": round(order_total, 2)
+            })
+
     return {
         "message": "Welcome to Sales Dashboard",
         "access": "Salesman",
-        "username": user.username
+        "username": user.username,
+        "total_orders": total_orders,
+        "pending_orders": pending_orders,
+        "approved_orders": approved_orders,
+        "total_items": total_items,
+        "total_sales": round(total_sales, 2),
+        "recent_orders": recent_orders
     }
+
 
 
 # ==================================================
@@ -3003,6 +3073,375 @@ def sales_audit_report(
     }
 
 
+@app.get("/reports/sales/export/csv")
+def export_sales_csv(
+    start_date: str = None,
+    end_date: str = None,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin", "accountant", "owner"))
+):
+    from datetime import datetime
+
+    query = db.query(models.Invoice)
+
+    if start_date:
+        try:
+            start = datetime.strptime(start_date, "%Y-%m-%d")
+            query = query.filter(models.Invoice.invoice_date >= start)
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail="start_date must use YYYY-MM-DD format"
+            )
+
+    if end_date:
+        try:
+            end = datetime.strptime(end_date, "%Y-%m-%d")
+            end = end.replace(hour=23, minute=59, second=59)
+            query = query.filter(models.Invoice.invoice_date <= end)
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail="end_date must use YYYY-MM-DD format"
+            )
+
+    invoices = query.order_by(models.Invoice.invoice_date).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    writer.writerow([
+        "Invoice ID",
+        "Invoice Number",
+        "Invoice Date",
+        "Customer",
+        "Taxable Amount",
+        "CGST",
+        "SGST",
+        "IGST",
+        "Invoice Total",
+        "Status"
+    ])
+
+    for invoice in invoices:
+        customer = db.query(models.Customer).filter(
+            models.Customer.id == invoice.customer_id
+        ).first()
+
+        writer.writerow([
+            invoice.id,
+            invoice.invoice_number,
+            invoice.invoice_date.isoformat() if invoice.invoice_date else "",
+            customer.name if customer else "Unknown",
+            invoice.taxable_amount,
+            invoice.cgst_amount,
+            invoice.sgst_amount,
+            invoice.igst_amount,
+            invoice.total_amount,
+            invoice.status
+        ])
+
+    output.seek(0)
+
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition":
+                "attachment; filename=FactoryFlow_Sales_Register.csv"
+        }
+    )
+
+
+@app.get("/reports/sales/export/excel")
+def export_sales_excel(
+    start_date: str = None,
+    end_date: str = None,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin", "accountant", "owner"))
+):
+    from datetime import datetime
+
+    query = db.query(models.Invoice)
+
+    if start_date:
+        try:
+            start = datetime.strptime(start_date, "%Y-%m-%d")
+            query = query.filter(models.Invoice.invoice_date >= start)
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail="start_date must use YYYY-MM-DD format"
+            )
+
+    if end_date:
+        try:
+            end = datetime.strptime(end_date, "%Y-%m-%d")
+            end = end.replace(hour=23, minute=59, second=59)
+            query = query.filter(models.Invoice.invoice_date <= end)
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail="end_date must use YYYY-MM-DD format"
+            )
+
+    invoices = query.order_by(models.Invoice.invoice_date).all()
+
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Sales Register"
+
+    headers = [
+        "Invoice ID", "Invoice Number", "Invoice Date",
+        "Customer", "Taxable Amount", "CGST", "SGST",
+        "IGST", "Invoice Total", "Status"
+    ]
+
+    sheet.append(headers)
+
+    for cell in sheet[1]:
+        cell.font = Font(bold=True, color="FFFFFF")
+        cell.fill = PatternFill(
+            start_color="2563EB",
+            end_color="2563EB",
+            fill_type="solid"
+        )
+        cell.alignment = Alignment(horizontal="center")
+
+    for invoice in invoices:
+        customer = db.query(models.Customer).filter(
+            models.Customer.id == invoice.customer_id
+        ).first()
+
+        sheet.append([
+            invoice.id,
+            invoice.invoice_number,
+            invoice.invoice_date.isoformat() if invoice.invoice_date else "",
+            customer.name if customer else "Unknown",
+            invoice.taxable_amount,
+            invoice.cgst_amount,
+            invoice.sgst_amount,
+            invoice.igst_amount,
+            invoice.total_amount,
+            invoice.status
+        ])
+
+    for column in sheet.columns:
+        max_length = max(
+            len(str(cell.value or "")) for cell in column
+        )
+        sheet.column_dimensions[
+            column[0].column_letter
+        ].width = max_length + 4
+
+    output = io.BytesIO()
+    workbook.save(output)
+    output.seek(0)
+
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition":
+                "attachment; filename=FactoryFlow_Sales_Register.xlsx"
+        }
+    )
+
+
+@app.get("/reports/stock-ledger/export/csv")
+def export_stock_ledger_csv(
+    start_date: str = None,
+    end_date: str = None,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin", "accountant", "owner"))
+):
+    from datetime import datetime
+
+    query = (
+        db.query(models.StockMovement, models.InventoryItem)
+        .join(
+            models.InventoryItem,
+            models.StockMovement.inventory_item_id == models.InventoryItem.id
+        )
+    )
+
+    if start_date:
+        try:
+            start = datetime.strptime(start_date, "%Y-%m-%d")
+            query = query.filter(
+                models.StockMovement.movement_date >= start
+            )
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail="start_date must use YYYY-MM-DD format"
+            )
+
+    if end_date:
+        try:
+            end = datetime.strptime(end_date, "%Y-%m-%d")
+            end = end.replace(hour=23, minute=59, second=59)
+            query = query.filter(
+                models.StockMovement.movement_date <= end
+            )
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail="end_date must use YYYY-MM-DD format"
+            )
+
+    movements = query.order_by(
+        models.StockMovement.movement_date,
+        models.StockMovement.id
+    ).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    writer.writerow([
+        "Movement ID",
+        "Date",
+        "Inventory Item",
+        "Item Type",
+        "Movement Type",
+        "Quantity",
+        "Unit",
+        "Unit Cost",
+        "Source Type",
+        "Source ID"
+    ])
+
+    for movement, item in movements:
+        writer.writerow([
+            movement.id,
+            movement.movement_date.isoformat()
+            if movement.movement_date else "",
+            item.name,
+            item.item_type,
+            movement.movement_type,
+            movement.quantity,
+            item.unit,
+            movement.unit_cost,
+            movement.source_type,
+            movement.source_id
+        ])
+
+    output.seek(0)
+
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition":
+                "attachment; filename=FactoryFlow_Stock_Ledger.csv"
+        }
+    )
+
+
+@app.get("/reports/stock-ledger/export/excel")
+def export_stock_ledger_excel(
+    start_date: str = None,
+    end_date: str = None,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin", "accountant", "owner"))
+):
+    from datetime import datetime
+
+    query = (
+        db.query(models.StockMovement, models.InventoryItem)
+        .join(
+            models.InventoryItem,
+            models.StockMovement.inventory_item_id == models.InventoryItem.id
+        )
+    )
+
+    if start_date:
+        try:
+            start = datetime.strptime(start_date, "%Y-%m-%d")
+            query = query.filter(
+                models.StockMovement.movement_date >= start
+            )
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail="start_date must use YYYY-MM-DD format"
+            )
+
+    if end_date:
+        try:
+            end = datetime.strptime(end_date, "%Y-%m-%d")
+            end = end.replace(hour=23, minute=59, second=59)
+            query = query.filter(
+                models.StockMovement.movement_date <= end
+            )
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail="end_date must use YYYY-MM-DD format"
+            )
+
+    movements = query.order_by(
+        models.StockMovement.movement_date,
+        models.StockMovement.id
+    ).all()
+
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Stock Ledger"
+
+    headers = [
+        "Movement ID", "Date", "Inventory Item", "Item Type",
+        "Movement Type", "Quantity", "Unit", "Unit Cost",
+        "Source Type", "Source ID"
+    ]
+
+    sheet.append(headers)
+
+    for cell in sheet[1]:
+        cell.font = Font(bold=True, color="FFFFFF")
+        cell.fill = PatternFill(
+            start_color="2563EB",
+            end_color="2563EB",
+            fill_type="solid"
+        )
+        cell.alignment = Alignment(horizontal="center")
+
+    for movement, item in movements:
+        sheet.append([
+            movement.id,
+            movement.movement_date.isoformat()
+            if movement.movement_date else "",
+            item.name,
+            item.item_type,
+            movement.movement_type,
+            movement.quantity,
+            item.unit,
+            movement.unit_cost,
+            movement.source_type,
+            movement.source_id
+        ])
+
+    for column in sheet.columns:
+        max_length = max(
+            len(str(cell.value or "")) for cell in column
+        )
+        sheet.column_dimensions[
+            column[0].column_letter
+        ].width = max_length + 4
+
+    output = io.BytesIO()
+    workbook.save(output)
+    output.seek(0)
+
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition":
+                "attachment; filename=FactoryFlow_Stock_Ledger.xlsx"
+        }
+    )
+
 # ==================================================
 # 43. PAYMENT AUDIT REPORT
 # ==================================================
@@ -3145,6 +3584,124 @@ def inventory_audit_report(
         "inventory": results
     }
 
+
+@app.get("/reports/inventory/export/csv")
+def export_inventory_csv(
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin", "accountant", "owner"))
+):
+    items = db.query(models.InventoryItem).order_by(
+        models.InventoryItem.id
+    ).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    writer.writerow([
+        "Inventory ID",
+        "Item Name",
+        "Item Type",
+        "Unit",
+        "Current Stock",
+        "Unit Cost",
+        "Stock Value"
+    ])
+
+    for item in items:
+        stock = item.current_stock or 0
+        unit_cost = item.unit_cost or 0
+        stock_value = round(stock * unit_cost, 2)
+
+        writer.writerow([
+            item.id,
+            item.name,
+            item.item_type,
+            item.unit,
+            stock,
+            unit_cost,
+            stock_value
+        ])
+
+    output.seek(0)
+
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition":
+                "attachment; filename=FactoryFlow_Inventory_Report.csv"
+        }
+    )
+
+
+@app.get("/reports/inventory/export/excel")
+def export_inventory_excel(
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("admin", "accountant", "owner"))
+):
+    items = db.query(models.InventoryItem).order_by(
+        models.InventoryItem.id
+    ).all()
+
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Inventory Report"
+
+    headers = [
+        "Inventory ID",
+        "Item Name",
+        "Item Type",
+        "Unit",
+        "Current Stock",
+        "Unit Cost",
+        "Stock Value"
+    ]
+
+    sheet.append(headers)
+
+    for cell in sheet[1]:
+        cell.font = Font(bold=True, color="FFFFFF")
+        cell.fill = PatternFill(
+            start_color="2563EB",
+            end_color="2563EB",
+            fill_type="solid"
+        )
+        cell.alignment = Alignment(horizontal="center")
+
+    for item in items:
+        stock = item.current_stock or 0
+        unit_cost = item.unit_cost or 0
+
+        sheet.append([
+            item.id,
+            item.name,
+            item.item_type,
+            item.unit,
+            stock,
+            unit_cost,
+            round(stock * unit_cost, 2)
+        ])
+
+    for column in sheet.columns:
+        max_length = max(
+            len(str(cell.value or "")) for cell in column
+        )
+        sheet.column_dimensions[
+            column[0].column_letter
+        ].width = max_length + 4
+
+    output = io.BytesIO()
+    workbook.save(output)
+    output.seek(0)
+
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition":
+                "attachment; filename=FactoryFlow_Inventory_Report.xlsx"
+        }
+    )
 
 # ==================================================
 # 46. OWNER AUDIT DASHBOARD
