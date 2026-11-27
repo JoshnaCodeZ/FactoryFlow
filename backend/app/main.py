@@ -34,7 +34,18 @@ app = FastAPI(
     description="Order-to-Audit Management System",
     version="1.2.0"
 )
+from fastapi.middleware.cors import CORSMiddleware
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://127.0.0.1:5500",
+        "http://localhost:5500"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # ==========================================
 # CORS CONFIGURATION
 # ==========================================
@@ -771,7 +782,48 @@ def create_sales_order(
         "total_amount": round(total_amount, 2)
     }
 
+@app.get("/sales/orders")
+def get_sales_orders(
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("salesman"))
+):
+    orders = db.query(models.SalesOrder).filter(
+        models.SalesOrder.salesman_id == current_user.id
+    ).order_by(
+        models.SalesOrder.id.desc()
+    ).all()
 
+    result = []
+
+    for order in orders:
+        customer = db.query(models.Customer).filter(
+            models.Customer.id == order.customer_id
+        ).first()
+
+        items = db.query(models.OrderItem).filter(
+            models.OrderItem.order_id == order.id
+        ).all()
+
+        total_quantity = sum(item.quantity for item in items)
+
+        total_amount = sum(
+            item.quantity * item.unit_price for item in items
+        )
+
+        result.append({
+            "order_id": order.id,
+            "order_number": order.order_number,
+            "customer": customer.name if customer else "Unknown",
+            "order_date": order.created_at.isoformat() if order.created_at else None,
+            "quantity": total_quantity,
+            "total_amount": round(total_amount, 2),
+            "status": order.status
+        })
+
+    return {
+        "total_orders": len(result),
+        "orders": result
+    }
 # ==================================================
 # 21. ADMIN VIEW ALL SALES ORDERS
 # ==================================================
@@ -1013,6 +1065,74 @@ def decide_order(
             status_code=500,
             detail="Unable to process the order. Check server logs."
         )
+
+
+# ==================================================
+# SALESMAN: VIEW ONLY THEIR OWN ORDERS
+# ==================================================
+
+@app.get("/sales/orders")
+def get_salesman_orders(
+    db: Session = Depends(get_db),
+    current_user=Depends(require_role("salesman"))
+):
+    orders = (
+        db.query(models.SalesOrder)
+        .filter(models.SalesOrder.salesman_id == current_user.id)
+        .order_by(models.SalesOrder.id.desc())
+        .all()
+    )
+
+    result = []
+
+    for order in orders:
+        customer = db.query(models.Customer).filter(
+            models.Customer.id == order.customer_id
+        ).first()
+
+        items = db.query(models.OrderItem).filter(
+            models.OrderItem.order_id == order.id
+        ).all()
+
+        order_items = []
+        total_amount = 0
+        total_quantity = 0
+
+        for item in items:
+            product = db.query(models.Product).filter(
+                models.Product.id == item.product_id
+            ).first()
+
+            subtotal = item.quantity * item.unit_price
+            total_amount += subtotal
+            total_quantity += item.quantity
+
+            order_items.append({
+                "product_id": item.product_id,
+                "product": product.name if product else "Unknown",
+                "quantity": item.quantity,
+                "unit_price": item.unit_price,
+                "subtotal": round(subtotal, 2)
+            })
+
+        result.append({
+            "order_id": order.id,
+            "order_number": order.order_number,
+            "customer": customer.name if customer else "Unknown",
+            "status": order.status,
+            "order_date": (
+                order.order_date.isoformat()
+                if order.order_date else None
+            ),
+            "quantity": total_quantity,
+            "total_amount": round(total_amount, 2),
+            "items": order_items
+        })
+
+    return {
+        "total_orders": len(result),
+        "orders": result
+    }
 
 
 # ==================================================

@@ -72,8 +72,16 @@ class SalesOrder(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     order_number = Column(String, unique=True, nullable=False)
-    salesman_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False)
+    salesman_id = Column(
+        Integer,
+        ForeignKey("users.id"),
+        nullable=False
+    )
+    customer_id = Column(
+        Integer,
+        ForeignKey("customers.id"),
+        nullable=False
+    )
     status = Column(String, default="pending")
     order_date = Column(DateTime, default=datetime.utcnow)
     notes = Column(String)
@@ -83,8 +91,16 @@ class OrderItem(Base):
     __tablename__ = "order_items"
 
     id = Column(Integer, primary_key=True, index=True)
-    order_id = Column(Integer, ForeignKey("sales_orders.id"), nullable=False)
-    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    order_id = Column(
+        Integer,
+        ForeignKey("sales_orders.id"),
+        nullable=False
+    )
+    product_id = Column(
+        Integer,
+        ForeignKey("products.id"),
+        nullable=False
+    )
     quantity = Column(Integer, nullable=False)
     unit_price = Column(Float, nullable=False)
 
@@ -102,7 +118,11 @@ class InventoryItem(Base):
     unit = Column(String, nullable=False)
     current_stock = Column(Float, default=0)
     unit_cost = Column(Float, default=0)
-    product_id = Column(Integer, ForeignKey("products.id"), nullable=True)
+    product_id = Column(
+        Integer,
+        ForeignKey("products.id"),
+        nullable=True
+    )
 
 
 # ==================================================
@@ -113,7 +133,11 @@ class BOM(Base):
     __tablename__ = "boms"
 
     id = Column(Integer, primary_key=True, index=True)
-    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    product_id = Column(
+        Integer,
+        ForeignKey("products.id"),
+        nullable=False
+    )
     batch_size = Column(Integer, default=200)
     expected_output = Column(Integer, nullable=False)
 
@@ -122,7 +146,11 @@ class BOMItem(Base):
     __tablename__ = "bom_items"
 
     id = Column(Integer, primary_key=True, index=True)
-    bom_id = Column(Integer, ForeignKey("boms.id"), nullable=False)
+    bom_id = Column(
+        Integer,
+        ForeignKey("boms.id"),
+        nullable=False
+    )
     inventory_item_id = Column(
         Integer,
         ForeignKey("inventory_items.id"),
@@ -139,7 +167,11 @@ class ProductionRun(Base):
     __tablename__ = "production_runs"
 
     id = Column(Integer, primary_key=True, index=True)
-    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    product_id = Column(
+        Integer,
+        ForeignKey("products.id"),
+        nullable=False
+    )
     batch_size = Column(Integer, nullable=False)
     expected_output = Column(Integer, nullable=False)
     actual_output = Column(Integer, default=0)
@@ -267,12 +299,14 @@ class Invoice(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     invoice_number = Column(String, unique=True, nullable=False)
+
     order_id = Column(
         Integer,
         ForeignKey("sales_orders.id"),
         nullable=False,
         unique=True
     )
+
     customer_id = Column(
         Integer,
         ForeignKey("customers.id"),
@@ -325,7 +359,6 @@ class Dispatch(Base):
     __tablename__ = "dispatches"
 
     id = Column(Integer, primary_key=True, index=True)
-
     dispatch_number = Column(String, unique=True, nullable=False)
 
     order_id = Column(
